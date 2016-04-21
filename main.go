@@ -13,7 +13,7 @@ import (
 var (
 	version = "1.0"
 	usage   = os.ExpandEnv(
-		`bithookctl` + version + `
+		`bithookctl ` + version + `
 
 Manage your hooks in Bitbucket (Atlassian Stash) repository.
 
@@ -22,11 +22,12 @@ Usage:
     bithookctl [options] -A <hook> <id> [(-v <var_name> <var_value>)]...
     bithookctl [options] -U <hook> <id>
     bithookctl [options] -R <hook> <id>
+    bithookctl -h | --help
 
 Options:
     -L --list        List installed hooks.
-	-A --add         Add hook <hook> with <id>, compile <templates>/<hook>
-					 template and use as <hook> args.
+    -A --add         Add hook <hook> with <id>, compile <templates>/<hook>
+                     template and use as <hook> args.
     -U --update      Update hook <hook> with <id> args.
     -R --remove      Remove hook <id> with <id>.
     -u <url>         Specify repository URL.
@@ -37,8 +38,8 @@ Options:
                      [default: /var/lib/bithookctl/templates/]
     -p <key>         Specify Bitbucket hook key.
                      [default: com.ngs.stash.externalhooks.external-hooks:external-pre-receive-hook]
-	-v               Set template variable <var_name> value to <var_value>.
-	-e               Do not use template.
+    -v               Set template variable <var_name> value to <var_value>.
+    -e               Do not use template.
     -h --help        Show this screen.
     --version        Show version.
 `)
