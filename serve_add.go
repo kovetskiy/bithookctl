@@ -70,5 +70,8 @@ func handleModeAdd(
 
 func fileExists(path string) bool {
 	_, err := os.Stat(path)
-	return !os.IsNotExist(err)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return true
 }

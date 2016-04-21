@@ -17,6 +17,12 @@ var (
 
 Manage your hooks in Bitbucket (Atlassian Stash) repository.
 
+	You should create configuration file at ~/.config/bithookctl.conf
+with following syntax:
+
+	user = "username"
+	pass = "password"
+
 Usage:
     bithookctl [options] -L
     bithookctl [options] -A <hook> <id> [(-v <var_name> <var_value>)]...
