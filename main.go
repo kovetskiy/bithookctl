@@ -136,6 +136,8 @@ func main() {
 	if err != nil {
 		hierr.Fatalf(err, "can't save hook settings")
 	}
+
+	fmt.Println("hook settings saved")
 }
 
 func generateTemplateVars(names, values []string) map[string]string {
