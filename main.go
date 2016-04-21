@@ -39,7 +39,6 @@ Options:
     -p <key>         Specify Bitbucket hook key.
                      [default: com.ngs.stash.externalhooks.external-hooks:external-pre-receive-hook]
     -v               Set template variable <var_name> value to <var_value>.
-    -e               Do not use template.
     -h --help        Show this screen.
     --version        Show version.
 `)

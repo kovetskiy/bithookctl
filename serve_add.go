@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 	libtemplate "text/template"
@@ -27,22 +28,29 @@ func handleModeAdd(
 		templatePath = filepath.Join(templatesDir, templateName)
 	)
 
-	template, err := libtemplate.New(templateName).
-		Option("missingkey=error").
-		Funcs(getHookTemplateFunctions(vars)).
-		ParseFiles(templatePath)
-	if err != nil {
-		return hierr.Errorf(
-			hierr.Errorf(err, templatePath),
-			"can't parse template",
-		)
-	}
+	if fileExists(templatePath) {
+		template, err := libtemplate.New(templateName).
+			Option("missingkey=error").
+			Funcs(getHookTemplateFunctions(vars)).
+			ParseFiles(templatePath)
+		if err != nil {
+			return hierr.Errorf(
+				hierr.Errorf(err, templatePath),
+				"can't parse template",
+			)
+		}
 
-	err = template.Execute(hookArgs, vars)
-	if err != nil {
-		return hierr.Errorf(
-			hierr.Errorf(err, templatePath),
-			"can't compile template",
+		err = template.Execute(hookArgs, vars)
+		if err != nil {
+			return hierr.Errorf(
+				hierr.Errorf(err, templatePath),
+				"can't compile template",
+			)
+		}
+	} else {
+		fmt.Fprintln(
+			os.Stderr,
+			"template file for hook not found, hook args will be empty",
 		)
 	}
 
@@ -52,10 +60,15 @@ func handleModeAdd(
 		Args: strings.Split(hookArgs.String(), "\n"),
 	}
 
-	err = hooks.Append(hook)
+	err := hooks.Append(hook)
 	if err != nil {
 		return hierr.Errorf("can't add hook %s@%s", hookName, hookID)
 	}
 
 	return nil
+}
+
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+	return !os.IsNotExist(err)
 }
