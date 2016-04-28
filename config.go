@@ -1,12 +1,13 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/BurntSushi/toml"
-	"github.com/seletskiy/hierr"
 	"github.com/zazab/zhash"
 )
 
-func getConfig(path string) (zhash.Hash, error) {
+func getHash(path string) (zhash.Hash, error) {
 	data := map[string]interface{}{}
 	_, err := toml.DecodeFile(path, &data)
 	if err != nil {
@@ -16,21 +17,33 @@ func getConfig(path string) (zhash.Hash, error) {
 	return zhash.HashFromMap(data), nil
 }
 
-func GetUserData(configPath string) (user, pass string, err error) {
-	config, err := getConfig(configPath)
+func GetConfig(
+	path string,
+) (user, pass string, aliases map[string]string, err error) {
+	hash, err := getHash(path)
 	if err != nil {
-		return "", "", err
+		return "", "", nil, err
 	}
 
-	user, err = config.GetString("user")
+	user, err = hash.GetString("user")
 	if err != nil {
-		return "", "", hierr.Errorf(err, "can't get 'user' field from config")
+		return "", "", nil, err
 	}
 
-	pass, err = config.GetString("pass")
+	pass, err = hash.GetString("pass")
 	if err != nil {
-		return "", "", hierr.Errorf(err, "can't get 'pass' field from config")
+		return "", "", nil, err
 	}
 
-	return user, pass, nil
+	aliasesData, err := hash.GetMap("aliases")
+	if err != nil && !zhash.IsNotFound(err) {
+		return "", "", nil, err
+	}
+
+	aliases = map[string]string{}
+	for alias, hook := range aliasesData {
+		aliases[alias] = fmt.Sprintf("%s", hook)
+	}
+
+	return user, pass, aliases, nil
 }

@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/docopt/docopt-go"
 	"github.com/kovetskiy/bithooks"
+	"github.com/kovetskiy/go-docopt"
 	"github.com/seletskiy/hierr"
 )
 
@@ -17,11 +17,18 @@ var (
 
 Manage your hooks in Bitbucket (Atlassian Stash) repository.
 
-	You should create configuration file at ~/.config/bithookctl.conf
+You should create configuration file at ~/.config/bithookctl.conf
 with following syntax:
 
-	user = "username"
-	pass = "password"
+  user = "username"
+  pass = "password"
+
+If you will work with multiple hooks you can add aliases section with following
+syntax:
+
+  [aliases]
+   pre = "com.ngs.stash.externalhooks.external-hooks:external-pre-receive-hook"
+   post = "com.ngs.stash.externalhooks.external-hooks:external-post-receive-hook"
 
 Usage:
     bithookctl [options] -L
@@ -31,22 +38,24 @@ Usage:
     bithookctl -h | --help
 
 Options:
-    -L --list        List installed hooks.
-    -A --add         Add hook <hook> with <id>, compile <templates>/<hook>
+    -L --list       List installed hooks.
+    -A --add        Add hook <hook> with <id>, compile <templates>/<hook>
                      template and use as <hook> args.
-    -U --update      Update hook <hook> with <id> args.
-    -R --remove      Remove hook <id> with <id>.
-    -u <url>         Specify repository URL.
-                     By default, it will be read from 'git remote origin' output.
-    -c <config>      Specify configuration file with user credentials.
+    -U --update     Update hook <hook> with <id> args.
+    -R --remove     Remove hook <id> with <id>.
+    -u <url>        Specify repository URL.
+                     By default, it will be read from 'git remote origin'
+                     output.
+    -c <config>     Specify configuration file with user credentials.
                      [default: $HOME/.config/bithookctl.conf]
-    -t <templates>   Specify directory with templates.
+    -t <templates>  Specify directory with templates.
                      [default: /var/lib/bithookctl/templates/]
-    -p <key>         Specify Bitbucket hook key.
-                     [default: com.ngs.stash.externalhooks.external-hooks:external-pre-receive-hook]
-    -v               Set template variable <var_name> value to <var_value>.
-    -h --help        Show this screen.
-    --version        Show version.
+    -p <key>        Specify Bitbucket hook key or an alias for hook key in
+                     [hooks] section from configuration file.
+                     [default: pre]
+    -v              Set template variable <var_name> value to <var_value>.
+    -h --help       Show this screen.
+    --version       Show version.
 `)
 )
 
@@ -73,7 +82,7 @@ func main() {
 		mode = getMode(args)
 	)
 
-	user, pass, err := GetUserData(configPath)
+	user, pass, aliases, err := GetConfig(configPath)
 	if err != nil {
 		hierr.Fatalf(err, "can't load configuration")
 	}
@@ -81,6 +90,10 @@ func main() {
 	repo, err := GetRepo(repoURL)
 	if err != nil {
 		hierr.Fatalf(err, "can't get repository")
+	}
+
+	if value, ok := aliases[hookKey]; ok {
+		hookKey = value
 	}
 
 	api := NewAPI(repo, user, pass, hookKey)
@@ -91,7 +104,7 @@ func main() {
 	}
 
 	if mode == "list" {
-		fmt.Println("Hooks:\n" + settings.Params)
+		fmt.Print("Hooks:\n" + settings.Params)
 		os.Exit(0)
 	}
 
@@ -135,6 +148,11 @@ func main() {
 	err = api.SetHookSettings(settings)
 	if err != nil {
 		hierr.Fatalf(err, "can't save hook settings")
+	}
+
+	err = api.EnableHook()
+	if err != nil {
+		hierr.Fatalf(err, "can't enable hook")
 	}
 
 	fmt.Println("hook settings saved")
