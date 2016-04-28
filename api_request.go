@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"net/url"
 
@@ -12,7 +13,7 @@ import (
 func request(
 	method string, resource *gopencils.Resource, options ...interface{},
 ) (interface{}, error) {
-	uri := resource.Api.BaseUrl.Path + resource.Url
+	uri := resource.Url
 	if len(options) > 0 {
 		if query, ok := options[len(options)-1].(map[string]string); ok {
 			queryValues := url.Values{}
@@ -46,7 +47,7 @@ func request(
 		panic("unexpected method")
 	}
 
-	if err == nil {
+	if err == nil || err == io.EOF {
 		err = extractRequestError(request, err)
 	}
 
