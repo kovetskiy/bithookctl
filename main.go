@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/kovetskiy/bithooks"
-	"github.com/kovetskiy/go-docopt"
+	"github.com/kovetskiy/godocs"
 	"github.com/seletskiy/hierr"
 )
 
@@ -60,10 +60,7 @@ Options:
 )
 
 func main() {
-	args, err := docopt.Parse(usage, nil, true, version, false, true)
-	if err != nil {
-		panic(err)
-	}
+	args := godocs.MustParse(usage, version, godocs.UsePager)
 
 	log.SetFlags(0)
 
