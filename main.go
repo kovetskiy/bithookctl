@@ -7,7 +7,7 @@ import (
 
 	"github.com/kovetskiy/bithooks"
 	"github.com/kovetskiy/godocs"
-	"github.com/seletskiy/hierr"
+	"github.com/reconquest/hierr-go"
 )
 
 var (
