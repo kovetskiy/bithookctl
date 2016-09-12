@@ -5,7 +5,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/kovetskiy/executil"
+	"github.com/reconquest/executil-go"
 )
 
 func isGitRepository() bool {

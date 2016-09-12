@@ -7,7 +7,7 @@ import (
 	"net/url"
 
 	"github.com/bndr/gopencils"
-	"github.com/seletskiy/hierr"
+	"github.com/reconquest/hierr-go"
 )
 
 func request(

@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/seletskiy/hierr"
+	"github.com/reconquest/hierr-go"
 )
 
 var (

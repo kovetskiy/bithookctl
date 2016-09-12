@@ -9,7 +9,7 @@ import (
 	libtemplate "text/template"
 
 	"github.com/kovetskiy/bithooks"
-	"github.com/seletskiy/hierr"
+	"github.com/reconquest/hierr-go"
 )
 
 func handleModeAdd(

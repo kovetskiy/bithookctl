@@ -10,8 +10,8 @@ import (
 	"strings"
 
 	"github.com/kovetskiy/bithooks"
-	"github.com/kovetskiy/executil"
-	"github.com/seletskiy/hierr"
+	"github.com/reconquest/executil-go"
+	"github.com/reconquest/hierr-go"
 )
 
 func handleModeUpdate(
